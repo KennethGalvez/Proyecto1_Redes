@@ -5,6 +5,7 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.IOException;
 
@@ -12,13 +13,22 @@ public class ComunicacionXMPP {
 
     private XMPPTCPConnection connection;
 
-    public ComunicacionXMPP(String host, int port) {
-        XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder()
+    public ComunicacionXMPP(String host, int port, String domain) {
+        try {
+            CustomTrustManager customTrustManager = new CustomTrustManager();
+
+            XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder()
                 .setHost(host)
                 .setPort(port)
+                .setXmppDomain(domain)
+                .setCustomX509TrustManager(customTrustManager)
                 .build();
 
-        connection = new XMPPTCPConnection(config);
+            XMPPTCPConnection connection = new XMPPTCPConnection(config);
+            
+        } catch (XmppStringprepException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean iniciarSesion(String username, String password) {
@@ -38,5 +48,6 @@ public class ComunicacionXMPP {
         }
     }
 
-
 }
+
+    

@@ -5,7 +5,7 @@ public class App
 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        ComunicacionXMPP xmppCommunication = new ComunicacionXMPP("alumchat.xyz", 5222);
+        ComunicacionXMPP xmppCommunication = new ComunicacionXMPP("alumchat.xyz", 5222, "alumchat.xyz"); 
 
         while (true) {
             displayMenu();
