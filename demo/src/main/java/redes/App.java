@@ -5,6 +5,7 @@ public class App
 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        ComunicacionXMPP xmppCommunication = new ComunicacionXMPP("alumchat.xyz", 5222);
 
         while (true) {
             displayMenu();
@@ -17,9 +18,20 @@ public class App
                     break;
                 case 2:
                     // Lógica para iniciar sesión
+                    System.out.print("Usuario: ");
+                    String username = scanner.nextLine();
+                    System.out.print("Contraseña: ");
+                    String password = scanner.nextLine();
+                    if (xmppCommunication.iniciarSesion(username, password)) {
+                        System.out.println("Inicio de sesión exitoso.");
+                    } else {
+                        System.out.println("No se pudo iniciar sesión.");
+                    }
                     break;
                 case 3:
                     // Lógica para cerrar sesión
+                    xmppCommunication.cerrarConexion();
+                    System.out.println("Sesión cerrada.");
                     break;
                 case 4:
                     // Lógica para eliminar la cuenta
@@ -49,7 +61,8 @@ public class App
                     // Lógica para enviar/recibir archivos
                     break;
                 case 13:
-                    System.out.println("Saliendo del cliente XMPP.");
+                    System.out.println("Saliendo del cliente XMPP. ¡Hasta luego!");
+                    xmppCommunication.cerrarConexion();
                     System.exit(0);
                 default:
                     System.out.println("Opción inválida. Introduce un número válido.");
