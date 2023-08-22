@@ -1,7 +1,15 @@
 package redes;
 
+import java.util.Map;
 import java.util.Scanner;
 
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.SmackException.NotLoggedInException;
+import org.jivesoftware.smack.XMPPException.XMPPErrorException;
+import org.jivesoftware.smack.packet.Presence;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 public class App {
@@ -55,9 +63,44 @@ public class App {
                     break;
                 case 5:
                     // Lógica para mostrar todos los usuarios/contactos y su estado
+                    Map<Jid, Presence> contactosYEstados = xmppCommunication.obtenerContactosYEstados();
+                    System.out.println("Lista de contactos y estados:");
+                    for (Map.Entry<Jid, Presence> entry : contactosYEstados.entrySet()) {
+                        Jid contactJid = entry.getKey();
+                        Presence presence = entry.getValue();
+
+                        String estado;
+                        if (presence.isAvailable()) {
+                            if (presence.getMode() == Presence.Mode.available) {
+                                estado = "Disponible";
+                            } else if (presence.getMode() == Presence.Mode.away) {
+                                estado = "Ausente";
+                            } else if (presence.getMode() == Presence.Mode.dnd) {
+                                estado = "Ocupado";
+                            } else {
+                                estado = "No Disponible";
+                            }
+                        } else {
+                            estado = "Desconectado";
+                        }
+
+                        System.out.println(contactJid + " - Estado: " + estado);
+                    }
                     break;
                 case 6:
                     // Lógica para agregar un usuario a los contactos
+                    System.out.print("Nombre del usuario que deseas agregar a tus contactos: ");
+                    String contactUsername = scanner.nextLine();
+                    
+                    Jid contactJid = JidCreate.from(contactUsername + "@alumchat.xyz");
+                    
+                    try {
+                        xmppCommunication.agregarContacto(contactJid);
+                        System.out.println(contactUsername + " ha sido agregado a tus contactos.");
+                    } catch (InterruptedException | XMPPErrorException | SmackException e) {
+                        e.printStackTrace();
+                        System.out.println("No se pudo agregar a " + contactUsername + " a tus contactos.");
+                    }
                     break;
                 case 7:
                     // Lógica para mostrar detalles de contacto de un usuario

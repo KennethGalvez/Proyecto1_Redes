@@ -1,11 +1,17 @@
 package redes;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.SmackException.NotLoggedInException;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.iqregister.AccountManager;
@@ -14,9 +20,17 @@ import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.roster.RosterEntry;
+import org.jivesoftware.smack.roster.RosterGroup;
+import org.jivesoftware.smack.roster.RosterListener;
+
 
 public class ComunicacionXMPP {
 
@@ -101,5 +115,23 @@ public class ComunicacionXMPP {
         }
     }
 
+    public Map<Jid, Presence> obtenerContactosYEstados() {
+    Roster roster = Roster.getInstanceFor(connection);
+    roster.setRosterLoadedAtLogin(true); // Cargar el roster al iniciar sesión
+
+    Map<Jid, Presence> contactosYEstados = new HashMap<>();
+
+    for (RosterEntry entry : roster.getEntries()) {
+        Presence presence = roster.getPresence(entry.getJid());
+        contactosYEstados.put(entry.getJid(), presence);
+    }
+
+    return contactosYEstados;
+    }
+
+    public void agregarContacto(Jid contactJid) throws NotLoggedInException, NotConnectedException, InterruptedException, XMPPErrorException, SmackException {
+        Roster roster = Roster.getInstanceFor(connection);
+        roster.createEntry((BareJid) contactJid, null, null);
+    }
 
 }
