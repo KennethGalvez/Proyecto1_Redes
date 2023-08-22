@@ -95,7 +95,7 @@ public class App {
                     System.out.print("Nombre del usuario que deseas agregar a tus contactos: ");
                     String contactUsername = scanner.nextLine();
                     
-                    Jid contactJid = JidCreate.from(contactUsername + "@alumchat.xyz");
+                    String contactJid = contactUsername + "@alumchat.xyz";
                     
                     try {
                         xmppCommunication.agregarContacto(contactJid);

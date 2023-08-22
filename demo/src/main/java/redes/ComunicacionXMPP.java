@@ -141,9 +141,10 @@ public class ComunicacionXMPP {
     return contactosYEstados;
     }
 
-    public void agregarContacto(Jid contactJid) throws NotLoggedInException, NotConnectedException, InterruptedException, XMPPErrorException, SmackException {
+    public void agregarContacto(String contactJid) throws NotLoggedInException, NotConnectedException, InterruptedException, XMPPErrorException, SmackException {
         Roster roster = Roster.getInstanceFor(connection);
-        roster.createEntry((BareJid) contactJid, null, null);
+        BareJid jid = JidCreate.bareFromOrNull(contactJid);
+        roster.createItemAndRequestSubscription(jid, contactJid, null);
     }
 
     public VCard obtenerVCard(String username) throws XmppStringprepException, InterruptedException, NotConnectedException, XMPPErrorException {
