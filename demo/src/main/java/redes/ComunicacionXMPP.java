@@ -5,9 +5,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.io.File;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
@@ -25,6 +27,7 @@ import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.EntityFullJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
@@ -39,8 +42,6 @@ import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jivesoftware.smackx.muc.MultiUserChatException.NotAMucServiceException;
-
-
 
 public class ComunicacionXMPP {
 
@@ -61,6 +62,7 @@ public class ComunicacionXMPP {
         try {
             connection.connect();
             connection.login(username, password);
+            iniciarEscuchaNotificaciones();
             return true;
         } catch (SmackException | IOException | XMPPException | InterruptedException e) {
             e.printStackTrace();
@@ -165,6 +167,17 @@ public class ComunicacionXMPP {
         Resourcepart resource = Resourcepart.from(connection.getUser().getLocalpart().toString());
         muc.join(resource);
 
+        // Agregar listener para manejar mensajes entrantes
+        muc.addMessageListener(new MessageListener() {
+            @Override
+            public void processMessage(Message message) {
+                String sender = message.getFrom().getResourceOrEmpty().toString();
+                String body = message.getBody();
+                System.out.println("[" + sender + "]: " + body);
+            }
+        });
+
+
         return muc;
     }
 
@@ -216,5 +229,22 @@ public class ComunicacionXMPP {
     
         definirMensajePresencia(presenceMode);
     }
-    
+
+    public void enviarNotificacion(String recipientUsername, String notificationMessage) throws SmackException.NotConnectedException, InterruptedException, XmppStringprepException {
+        EntityBareJid recipientJid = JidCreate.entityBareFrom(recipientUsername + "@alumchat.xyz");
+        Message notification = new Message(recipientJid);
+        notification.setBody(notificationMessage);
+        connection.sendStanza(notification);
+    }
+
+    public void iniciarEscuchaNotificaciones() {
+        ChatManager chatManager = ChatManager.getInstanceFor(connection);
+        chatManager.addIncomingListener(new IncomingChatMessageListener() {
+            @Override
+            public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
+                System.out.println("Notificación de " + from + ": " + message.getBody());
+            }
+        });
+    }
+
 }

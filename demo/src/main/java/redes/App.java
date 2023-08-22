@@ -167,6 +167,20 @@ public class App {
                     break;
                 case 11:
                     // Lógica para enviar/recibir notificaciones
+                    // Lógica para enviar notificaciones
+                    System.out.print("Nombre del usuario al que deseas enviar una notificación: ");
+                    String recipientUsername = scanner.nextLine();
+                    
+                    System.out.print("Mensaje de notificación: ");
+                    String notificationMessage = scanner.nextLine();
+                    
+                    try {
+                        xmppCommunication.enviarNotificacion(recipientUsername, notificationMessage);
+                        System.out.println("Notificación enviada exitosamente.");
+                    } catch (SmackException.NotConnectedException | InterruptedException e) {
+                        e.printStackTrace();
+                        System.out.println("Error al enviar la notificación.");
+                    }
                     break;
                 case 12:
                     // Lógica para enviar/recibir archivos
