@@ -66,11 +66,9 @@ Starts a 1-to-1 chat and sends messages.
 public void iniciarChat(String recipient) {
     // ...
 }
-
 public void enviarMensaje(String message) {
     // ...
 }
-
 public void cerrarChat() {
     // ...
 }
@@ -80,7 +78,6 @@ Allows joining a group chat room and sending messages.
 public MultiUserChat unirseConversacionGrupal(String roomName) {
     // ...
 }
-
 public void enviarMensajeGrupo(MultiUserChat muc, String message) {
     // ...
 }
@@ -90,7 +87,6 @@ Defines the user's presence state.
 public void definirMensajePresencia(Presence.Mode presenceMode) {
     // ...
 }
-
 public void mostrarOpcionesEstado() {
     // ...
 }
