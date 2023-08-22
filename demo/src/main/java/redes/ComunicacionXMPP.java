@@ -1,34 +1,34 @@
 package redes;
 
+import java.io.IOException;
+
+import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jxmpp.stringprep.XmppStringprepException;
-
-import java.io.IOException;
+import org.jivesoftware.smack.chat2.Chat;
+import org.jivesoftware.smack.chat2.ChatManager;
+import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
+import org.jivesoftware.smack.packet.Message;
+import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.impl.JidCreate;
 
 public class ComunicacionXMPP {
 
-    private XMPPTCPConnection connection;
+    private AbstractXMPPConnection connection;
 
-    public ComunicacionXMPP(String host, int port, String domain) {
-        try {
-            CustomTrustManager customTrustManager = new CustomTrustManager();
-
-            XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder()
+    public ComunicacionXMPP(String host, int port, String domain) throws XmppStringprepException {
+        XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder()
                 .setHost(host)
                 .setPort(port)
                 .setXmppDomain(domain)
-                .setCustomX509TrustManager(customTrustManager)
+                .setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
                 .build();
 
-            XMPPTCPConnection connection = new XMPPTCPConnection(config);
-            
-        } catch (XmppStringprepException e) {
-            e.printStackTrace();
-        }
+        connection = new XMPPTCPConnection(config);
     }
 
     public boolean iniciarSesion(String username, String password) {
@@ -48,6 +48,35 @@ public class ComunicacionXMPP {
         }
     }
 
-}
+    private Chat chat;
 
-    
+    public void iniciarChat(String recipient) throws SmackException.NotConnectedException, XmppStringprepException, InterruptedException {
+        ChatManager chatManager = ChatManager.getInstanceFor(connection);
+        EntityBareJid jid = JidCreate.entityBareFrom(recipient + "@alumchat.xyz");
+        chat = chatManager.chatWith(jid);
+
+        // Agregar un listener para manejar los mensajes entrantes
+        chatManager.addIncomingListener(new IncomingChatMessageListener() {
+            @Override
+            public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
+                String body = message.getBody();
+                System.out.println(from + ": " + body);
+            }
+        });
+
+        Message message = new Message();
+        message.setBody("---------------");
+        chat.send(message);
+    }
+
+    public void enviarMensaje(String message) throws SmackException.NotConnectedException, InterruptedException {
+        Message newMessage = new Message();
+        newMessage.setBody(message);
+        chat.send(newMessage);
+    }
+
+
+    public void cerrarChat() {
+        // No es necesario cerrar el chat en esta versión de Smack
+    }
+}

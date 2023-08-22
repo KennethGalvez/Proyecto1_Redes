@@ -1,11 +1,13 @@
 package redes;
+
 import java.util.Scanner;
 
-public class App 
-{
-    public static void main(String[] args) {
+import org.jxmpp.stringprep.XmppStringprepException;
+
+public class App {
+    public static void main(String[] args) throws XmppStringprepException {
         Scanner scanner = new Scanner(System.in);
-        ComunicacionXMPP xmppCommunication = new ComunicacionXMPP("alumchat.xyz", 5222, "alumchat.xyz"); 
+        ComunicacionXMPP xmppCommunication = new ComunicacionXMPP("alumchat.xyz", 5222, "alumchat.xyz");
 
         while (true) {
             displayMenu();
@@ -47,6 +49,7 @@ public class App
                     break;
                 case 8:
                     // Lógica para la comunicación 1 a 1 con un usuario
+                    startOneToOneChat(xmppCommunication);
                     break;
                 case 9:
                     // Lógica para participar en conversaciones grupales
@@ -86,5 +89,36 @@ public class App
         System.out.println("12. Enviar/recibir archivos");
         System.out.println("13. Salir");
         System.out.print("Elige una opción: ");
+    }
+
+    private static void startOneToOneChat(ComunicacionXMPP xmppCommunication) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Nombre del usuario con el que deseas chatear: ");
+        String recipient = scanner.nextLine();
+
+        System.out.println("Comenzando el chat con " + recipient);
+        
+        System.out.println("Para dejar de enviar mensajes escribe /exit");
+
+        // Iniciar el chat 1 a 1
+        try {
+            xmppCommunication.iniciarChat(recipient);
+
+            while (true) {
+                System.out.print("Tú: ");
+                String message = scanner.nextLine();
+                if (message.equalsIgnoreCase("/exit")) {
+                    break; // Salir del bucle si el usuario escribe "/exit"
+                }
+                xmppCommunication.enviarMensaje(message);
+            }
+
+            xmppCommunication.cerrarChat();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Saliendo del chat 1 a 1.");
     }
 }
