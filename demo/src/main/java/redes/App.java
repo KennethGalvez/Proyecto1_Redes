@@ -8,6 +8,9 @@ import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.SmackException.NotLoggedInException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
+import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -104,6 +107,26 @@ public class App {
                     break;
                 case 7:
                     // Lógica para mostrar detalles de contacto de un usuario
+                    System.out.print("Nombre de usuario para ver detalles: ");
+                    String usernameToViewDetails = scanner.nextLine();
+
+                    try {
+                        VCard vCard = xmppCommunication.obtenerVCard(usernameToViewDetails);
+                        if (vCard != null) {
+                            System.out.println("Detalles de " + usernameToViewDetails + ":");
+                            System.out.println("Nombre completo: " + vCard.getFirstName() + " " + vCard.getLastName());
+                            System.out.println("Género: " + vCard.getField("GENDER"));
+                            System.out.println("Cumpleaños: " + vCard.getField("BDAY"));
+                            System.out.println("Correo electrónico: " + vCard.getEmailWork());
+                            System.out.println("Teléfono: " + vCard.getPhoneHome("VOICE"));
+                            // Agrega más campos de la VCard si es necesario
+                        } else {
+                            System.out.println("No se pudo obtener los detalles del contacto.");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println("No se pudo obtener los detalles del contacto.");
+                    }
                     break;
                 case 8:
                     // Lógica para la comunicación 1 a 1 con un usuario
@@ -111,9 +134,36 @@ public class App {
                     break;
                 case 9:
                     // Lógica para participar en conversaciones grupales
+                    System.out.print("Nombre de la sala de chat grupal: ");
+                    String roomName = scanner.nextLine();
+
+                    try {
+                        MultiUserChat muc = xmppCommunication.unirseConversacionGrupal(roomName);
+                        if (muc != null) {
+                            System.out.println("Te has unido a la sala: " + roomName);
+                            
+                            System.out.println("Escribe tu mensaje (escribe /exit para salir del chat grupal):");
+                            while (true) {
+                                System.out.print("Tú: ");
+                                String groupMessage = scanner.nextLine();
+                                if (groupMessage.equalsIgnoreCase("/exit")) {
+                                    break; // Salir del bucle si el usuario escribe "/exit"
+                                }
+                                xmppCommunication.enviarMensajeGrupo(muc, groupMessage);
+                            }
+                            
+                            muc.leave(); // Salir de la sala cuando el usuario termina el chat grupal
+                        } else {
+                            System.out.println("No se pudo unir a la sala de chat grupal.");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println("No se pudo unir a la sala de chat grupal.");
+                    }
                     break;
                 case 10:
                     // Lógica para definir mensaje de presencia
+                    xmppCommunication.mostrarOpcionesEstado(); // Display and handle presence options
                     break;
                 case 11:
                     // Lógica para enviar/recibir notificaciones
