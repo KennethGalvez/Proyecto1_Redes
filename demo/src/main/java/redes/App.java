@@ -17,6 +17,16 @@ public class App {
             switch (choice) {
                 case 1:
                     // Lógica para registrar una nueva cuenta
+                    System.out.print("Nuevo usuario: ");
+                    String newUser = scanner.nextLine();
+                    System.out.print("Contraseña: ");
+                    String newPassword = scanner.nextLine();
+
+                    if (xmppCommunication.registrarCuenta(newUser, newPassword)) {
+                        System.out.println("Registro exitoso.");
+                    } else {
+                        System.out.println("No se pudo registrar la cuenta.");
+                    }
                     break;
                 case 2:
                     // Lógica para iniciar sesión
@@ -37,6 +47,11 @@ public class App {
                     break;
                 case 4:
                     // Lógica para eliminar la cuenta
+                    if (xmppCommunication.eliminarCuenta()) {
+                        System.out.println("Cuenta eliminada exitosamente.");
+                    } else {
+                        System.out.println("No se pudo eliminar la cuenta.");
+                    }
                     break;
                 case 5:
                     // Lógica para mostrar todos los usuarios/contactos y su estado

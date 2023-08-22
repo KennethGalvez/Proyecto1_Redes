@@ -8,6 +8,7 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jxmpp.stringprep.XmppStringprepException;
 import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
@@ -15,6 +16,7 @@ import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Localpart;
 
 public class ComunicacionXMPP {
 
@@ -64,9 +66,6 @@ public class ComunicacionXMPP {
             }
         });
 
-        Message message = new Message();
-        message.setBody("---------------");
-        chat.send(message);
     }
 
     public void enviarMensaje(String message) throws SmackException.NotConnectedException, InterruptedException {
@@ -79,4 +78,28 @@ public class ComunicacionXMPP {
     public void cerrarChat() {
         // No es necesario cerrar el chat en esta versión de Smack
     }
+
+    public boolean registrarCuenta(String newUser, String newPassword) {
+    try {
+        AccountManager accountManager = AccountManager.getInstance(connection);
+        accountManager.sensitiveOperationOverInsecureConnection(true);
+        accountManager.createAccount(Localpart.from(newUser), newPassword);
+        return true;
+    } catch (SmackException | InterruptedException | XMPPException | XmppStringprepException e) {
+        e.printStackTrace();
+        return false;
+        }
+    }
+    public boolean eliminarCuenta() {
+        try {
+            AccountManager accountManager = AccountManager.getInstance(connection);
+            accountManager.deleteAccount();
+            return true;
+        } catch (SmackException | InterruptedException | XMPPException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
 }
