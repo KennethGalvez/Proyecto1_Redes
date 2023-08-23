@@ -46,7 +46,7 @@ import org.jivesoftware.smackx.muc.MultiUserChatException.NotAMucServiceExceptio
 public class ComunicacionXMPP {
 
     private AbstractXMPPConnection connection;
-
+// Constructor to establish XMPP connection
     public ComunicacionXMPP(String host, int port, String domain) throws XmppStringprepException {
         XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder()
                 .setHost(host)
@@ -58,6 +58,7 @@ public class ComunicacionXMPP {
         connection = new XMPPTCPConnection(config);
     }
 
+    // Logic to log in
     public boolean iniciarSesion(String username, String password) {
         try {
             connection.connect();
@@ -69,7 +70,7 @@ public class ComunicacionXMPP {
             return false;
         }
     }
-
+// Logic to close the connection
     public void cerrarConexion() {
         if (connection != null && connection.isConnected()) {
             connection.disconnect();
@@ -77,13 +78,13 @@ public class ComunicacionXMPP {
     }
 
     private Chat chat;
-
+// Logic to start a chat with a recipient
     public void iniciarChat(String recipient) throws SmackException.NotConnectedException, XmppStringprepException, InterruptedException {
         ChatManager chatManager = ChatManager.getInstanceFor(connection);
-        EntityBareJid jid = JidCreate.entityBareFrom(recipient + "@alumchat.xyz");
+        EntityBareJid jid = JidCreate.entityBareFrom(recipient + "@alumchat.xyz"); //Addres of the other user
         chat = chatManager.chatWith(jid);
 
-        // Agregar un listener para manejar los mensajes entrantes
+        // listener to incoming message
         chatManager.addIncomingListener(new IncomingChatMessageListener() {
             @Override
             public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
@@ -102,9 +103,10 @@ public class ComunicacionXMPP {
 
 
     public void cerrarChat() {
-        // No es necesario cerrar el chat en esta versión de Smack
+        // Close Smack
     }
 
+    // Logic to register a new account
     public boolean registrarCuenta(String newUser, String newPassword) {
     try {
         AccountManager accountManager = AccountManager.getInstance(connection);
@@ -116,6 +118,7 @@ public class ComunicacionXMPP {
         return false;
         }
     }
+    // Logic to delete the account
     public boolean eliminarCuenta() {
         try {
             AccountManager accountManager = AccountManager.getInstance(connection);
@@ -126,10 +129,10 @@ public class ComunicacionXMPP {
             return false;
         }
     }
-
+    // Logic to get contacts and their states
     public Map<Jid, Presence> obtenerContactosYEstados() {
     Roster roster = Roster.getInstanceFor(connection);
-    roster.setRosterLoadedAtLogin(true); // Cargar el roster al iniciar sesión
+    roster.setRosterLoadedAtLogin(true); // Charge the roster when log in
 
     Map<Jid, Presence> contactosYEstados = new HashMap<>();
 
@@ -140,13 +143,14 @@ public class ComunicacionXMPP {
 
     return contactosYEstados;
     }
-
+    // Logic to add a contact
     public void agregarContacto(String contactJid) throws NotLoggedInException, NotConnectedException, InterruptedException, XMPPErrorException, SmackException {
         Roster roster = Roster.getInstanceFor(connection);
         BareJid jid = JidCreate.bareFromOrNull(contactJid);
         roster.createItemAndRequestSubscription(jid, contactJid, null);
     }
 
+    // Logic to get contact details using VCard
     public VCard obtenerVCard(String username) throws XmppStringprepException, InterruptedException, NotConnectedException, XMPPErrorException {
         EntityBareJid jid = JidCreate.entityBareFrom(username + "@alumchat.xyz");
         VCardManager vCardManager = VCardManager.getInstanceFor(connection);
@@ -160,6 +164,7 @@ public class ComunicacionXMPP {
         }
     }
 
+    // Logic to join a group conversation
     public MultiUserChat unirseConversacionGrupal(String roomName) throws XmppStringprepException, InterruptedException, XMPPErrorException, SmackException.NotConnectedException, NotAMucServiceException, NoResponseException {
         MultiUserChatManager mucManager = MultiUserChatManager.getInstanceFor(connection);
         EntityBareJid roomJid = JidCreate.entityBareFrom(roomName + "@conference.alumchat.xyz");
@@ -168,7 +173,7 @@ public class ComunicacionXMPP {
         Resourcepart resource = Resourcepart.from(connection.getUser().getLocalpart().toString());
         muc.join(resource);
 
-        // Agregar listener para manejar mensajes entrantes
+        // listener
         muc.addMessageListener(new MessageListener() {
             @Override
             public void processMessage(Message message) {
@@ -231,6 +236,7 @@ public class ComunicacionXMPP {
         definirMensajePresencia(presenceMode);
     }
 
+    // Logic to send a notification
     public void enviarNotificacion(String recipientUsername, String notificationMessage) throws SmackException.NotConnectedException, InterruptedException, XmppStringprepException {
         EntityBareJid recipientJid = JidCreate.entityBareFrom(recipientUsername + "@alumchat.xyz");
         Message notification = new Message(recipientJid);

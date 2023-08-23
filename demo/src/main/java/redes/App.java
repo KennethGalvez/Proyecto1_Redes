@@ -1,3 +1,4 @@
+// Import necessary libraries
 package redes;
 
 import java.util.Map;
@@ -15,11 +16,14 @@ import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+// Main class
 public class App {
     public static void main(String[] args) throws XmppStringprepException {
         Scanner scanner = new Scanner(System.in);
+        // Initialize XMPP communication with server details
         ComunicacionXMPP xmppCommunication = new ComunicacionXMPP("alumchat.xyz", 5222, "alumchat.xyz");
 
+        // Main loop for user interaction
         while (true) {
             displayMenu();
             int choice = scanner.nextInt();
@@ -27,7 +31,7 @@ public class App {
 
             switch (choice) {
                 case 1:
-                    // Lógica para registrar una nueva cuenta
+                    // Logic to register a new account
                     System.out.print("Nuevo usuario: ");
                     String newUser = scanner.nextLine();
                     System.out.print("Contraseña: ");
@@ -40,7 +44,7 @@ public class App {
                     }
                     break;
                 case 2:
-                    // Lógica para iniciar sesión
+                    // Logic to log in
                     System.out.print("Usuario: ");
                     String username = scanner.nextLine();
                     System.out.print("Contraseña: ");
@@ -52,12 +56,12 @@ public class App {
                     }
                     break;
                 case 3:
-                    // Lógica para cerrar sesión
+                    // Logic to log out
                     xmppCommunication.cerrarConexion();
                     System.out.println("Sesión cerrada.");
                     break;
                 case 4:
-                    // Lógica para eliminar la cuenta
+                    // Logic to delete the account
                     if (xmppCommunication.eliminarCuenta()) {
                         System.out.println("Cuenta eliminada exitosamente.");
                     } else {
@@ -65,7 +69,7 @@ public class App {
                     }
                     break;
                 case 5:
-                    // Lógica para mostrar todos los usuarios/contactos y su estado
+                    // Logic to display contacts and their states
                     Map<Jid, Presence> contactosYEstados = xmppCommunication.obtenerContactosYEstados();
                     System.out.println("Lista de contactos y estados:");
                     for (Map.Entry<Jid, Presence> entry : contactosYEstados.entrySet()) {
@@ -91,7 +95,7 @@ public class App {
                     }
                     break;
                 case 6:
-                    // Lógica para agregar un usuario a los contactos
+                    // Logic to add a contact
                     System.out.print("Nombre del usuario que deseas agregar a tus contactos: ");
                     String contactUsername = scanner.nextLine();
                     
@@ -106,7 +110,7 @@ public class App {
                     }
                     break;
                 case 7:
-                    // Lógica para mostrar detalles de contacto de un usuario
+                    // Logic to view contact details
                     System.out.print("Nombre de usuario para ver detalles: ");
                     String usernameToViewDetails = scanner.nextLine();
 
@@ -129,11 +133,11 @@ public class App {
                     }
                     break;
                 case 8:
-                    // Lógica para la comunicación 1 a 1 con un usuario
+                    // Logic for 1-to-1 communication
                     startOneToOneChat(xmppCommunication);
                     break;
                 case 9:
-                    // Lógica para participar en conversaciones grupales
+                    // Logic to join group conversations
                     System.out.print("Nombre de la sala de chat grupal: ");
                     String roomName = scanner.nextLine();
 
@@ -162,12 +166,11 @@ public class App {
                     }
                     break;
                 case 10:
-                    // Lógica para definir mensaje de presencia
+                    // Logic to set presence message
                     xmppCommunication.mostrarOpcionesEstado(); // Display and handle presence options
                     break;
                 case 11:
-                    // Lógica para enviar/recibir notificaciones
-                    // Lógica para enviar notificaciones
+                    // Logic to send/receive notifications
                     System.out.print("Nombre del usuario al que deseas enviar una notificación: ");
                     String recipientUsername = scanner.nextLine();
                     
