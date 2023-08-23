@@ -183,9 +183,6 @@ public class App {
                     }
                     break;
                 case 12:
-                    // Lógica para enviar/recibir archivos
-                    break;
-                case 13:
                     System.out.println("Saliendo del cliente XMPP. ¡Hasta luego!");
                     xmppCommunication.cerrarConexion();
                     System.exit(0);
@@ -208,8 +205,7 @@ public class App {
         System.out.println("9. Participar en conversaciones grupales");
         System.out.println("10. Definir mensaje de presencia");
         System.out.println("11. Enviar/recibir notificaciones");
-        System.out.println("12. Enviar/recibir archivos");
-        System.out.println("13. Salir");
+        System.out.println("12. Salir");
         System.out.print("Elige una opción: ");
     }
 
