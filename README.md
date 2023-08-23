@@ -10,6 +10,7 @@ Smack library (included in the project).
 Clone the repository or download the files to your local system.
 Open the project in your preferred IDE.
 Ensure you have the Smack library in your classpath.
+Run the App.java component.
 
 # Project Structure
 ComunicacionXMPP.java: A class responsible for XMPP communication.
